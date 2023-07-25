@@ -1,0 +1,50 @@
+{
+  "name": "authorizer",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/authorizer/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/authorizer",
+        "main": "apps/authorizer/src/main.ts",
+        "tsConfig": "apps/authorizer/tsconfig.app.json",
+        "assets": ["apps/authorizer/src/assets"],
+        "isolatedConfig": true,
+        "webpackConfig": "apps/authorizer/webpack.config.js"
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "authorizer:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "authorizer:build:development"
+        },
+        "production": {
+          "buildTarget": "authorizer:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/authorizer/**/*.ts"]
+      }
+    }
+  },
+  "tags": ["authorizer", "maani"]
+}
