@@ -19,13 +19,7 @@ export function createUser() {
     gender: gender,
     password: faker.internet.password(),
     lastPasswordChanged:
-      Math.random() < 0.2
-        ? new Date(
-            faker.date.past({
-              years: 2,
-            })
-          )
-        : null,
+      Math.random() < 0.05 ? faker.internet.password() : null,
     registeredAt: new Date(
       faker.date.past({
         years: 5,
@@ -64,7 +58,7 @@ export function createUser() {
 
 async function main() {
   const args = minimist(process.argv.slice(2));
-  for (let i = 0; i < args.n; i++) {
+  for (let i = 0; i < args.n ?? 1; i++) {
     await prisma.user.create({
       data: createUser(),
     });

@@ -2,16 +2,34 @@
   "name": "@hasin-neobank-backend-task-assignment/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "nx": "npx nx",
+    "gateway:dev": "npx nx run gateway:serve --configuration development",
+    "gateway:build": "npx nx run gateway:build --configuration production",
+    "gateway:prod": "npm run gateway:build && npx nx run gateway:serve --configuration production",
+    "authorizer:dev": "npx nx run authorizer:serve --configuration development",
+    "authorizer:build": "npx nx run authorizer:build --configuration production",
+    "authorizer:prod": "npm run authorizer:build && npx nx run authorizer:serve --configuration production",
+    "prisma:migrate": "npx prisma migrate dev --name init --skip-seed",
+    "prisma:seed": "npx prisma db seed --"
+  },
   "private": true,
   "dependencies": {
     "@nestjs/common": "^10.0.2",
     "@nestjs/core": "^10.0.2",
+    "@nestjs/jwt": "^10.1.0",
     "@nestjs/microservices": "^10.1.1",
+    "@nestjs/passport": "^10.0.0",
     "@nestjs/platform-express": "^10.0.2",
+    "@nestjs/swagger": "^7.1.4",
     "@prisma/client": "^5.0.0",
     "axios": "^1.0.0",
+    "bcryptjs": "^2.4.3",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.0",
     "kafkajs": "^2.2.4",
+    "passport": "^0.6.0",
+    "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0",
     "tslib": "^2.3.0"
@@ -28,9 +46,11 @@
     "@nx/node": "16.5.5",
     "@nx/webpack": "16.5.5",
     "@nx/workspace": "16.5.5",
+    "@types/bcryptjs": "^2.4.2",
     "@types/jest": "^29.4.0",
     "@types/minimist": "^1.2.2",
     "@types/node": "~18.7.1",
+    "@types/passport-jwt": "^3.0.9",
     "@typescript-eslint/eslint-plugin": "^5.60.1",
     "@typescript-eslint/parser": "^5.60.1",
     "eslint": "~8.15.0",
@@ -46,6 +66,7 @@
     "typescript": "~5.1.3"
   },
   "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+    "schema": "./apps/authorizer/prisma/schema.prisma",
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} ./apps/authorizer/prisma/seed.ts"
   }
 }
