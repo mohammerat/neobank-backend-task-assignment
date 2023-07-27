@@ -13,7 +13,7 @@ async function bootstrap() {
           brokers: ['localhost:29092'],
         },
         consumer: {
-          groupId: 'authorizer',
+          groupId: 'authorizer-consumer',
         },
       },
     }
