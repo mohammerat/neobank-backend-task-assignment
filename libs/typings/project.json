@@ -1,0 +1,27 @@
+{
+  "name": "typings",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/typings/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/typings",
+        "tsConfig": "libs/typings/tsconfig.lib.json",
+        "packageJson": "libs/typings/package.json",
+        "main": "libs/typings/src/index.ts",
+        "assets": ["libs/typings/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/typings/**/*.ts"]
+      }
+    }
+  },
+  "tags": ["libs", "typings"]
+}
