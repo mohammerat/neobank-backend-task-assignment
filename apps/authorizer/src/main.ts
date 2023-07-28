@@ -1,6 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
+import { AUTHORIZER_GROUP_ID } from '@libs/typings';
+
 import { AppModule } from './app/app.module';
 
 async function bootstrap() {
@@ -13,7 +15,7 @@ async function bootstrap() {
           brokers: ['localhost:29092'],
         },
         consumer: {
-          groupId: 'authorizer-consumer',
+          groupId: AUTHORIZER_GROUP_ID,
         },
       },
     }

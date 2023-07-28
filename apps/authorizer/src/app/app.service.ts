@@ -9,6 +9,7 @@ import {
   LoginDto,
   RefreshTokenPayload,
   SignUpDto,
+  VerifyMobileDto,
   VerifyMobileRO,
   jwtConstants,
 } from '@libs/typings';
@@ -70,6 +71,34 @@ export class AppService {
       message: 'Verification Code has been sent',
       status: 200,
     } as VerifyMobileRO;
+  }
+
+  async verify(dto: VerifyMobileDto) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        mobile: dto.mobile,
+      },
+    });
+
+    if (!user || !user.verificationCode)
+      throw new RpcException({ message: 'Access Denied' });
+
+    if (user.verificationCode !== dto.verificationCode)
+      throw new RpcException({ message: 'Verification Code is incorrect' });
+
+    await this.prisma.user.update({
+      where: {
+        mobile: user.mobile,
+      },
+      data: {
+        verificationCode: null,
+      },
+    });
+
+    return {
+      message: 'Verified Successfully',
+      status: 200,
+    };
   }
 
   async handleLogin(dto: LoginDto) {

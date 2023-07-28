@@ -15,6 +15,8 @@ import {
   VerifyMobileRO,
   IUser,
   RefreshTokenDto,
+  ChangePasswordPayload,
+  RefreshTokenPayload,
 } from '@libs/typings';
 
 @Injectable()
@@ -28,10 +30,12 @@ export class AppService implements OnModuleInit {
     this.logger = new Logger('Gateway/AppService');
   }
 
-  onModuleInit() {
+  async onModuleInit() {
     Object.values(AUTHORIZER_EVENTS).forEach((event) =>
       this.authorizerClient.subscribeToResponseOf(event)
     );
+
+    await this.authorizerClient.connect();
   }
 
   async signup(
@@ -80,19 +84,23 @@ export class AppService implements OnModuleInit {
     this.authorizerClient
       .send<LoginRO, LoginDto>(AUTHORIZER_EVENTS.LOGIN, dto)
       .subscribe({
-        next: (result) => callback(null, result),
+        next: (result) => {
+          console.log(result);
+          callback(null, result);
+        },
         error: (err) => callback(err),
       });
   }
 
   changePassword(
+    user: IUser,
     dto: ChangePasswordDto,
     callback: (err: Error | null, result?: ChangePasswordRO) => void
   ) {
     this.authorizerClient
-      .send<ChangePasswordRO, ChangePasswordDto>(
+      .send<ChangePasswordRO, ChangePasswordPayload>(
         AUTHORIZER_EVENTS.CHANGE_PASSWORD,
-        dto
+        { ...dto, id: user.id }
       )
       .subscribe({
         next: (result) => callback(null, result),
@@ -101,12 +109,15 @@ export class AppService implements OnModuleInit {
   }
 
   refreshToken(
-    userId: number,
+    user: IUser,
     dto: RefreshTokenDto,
     callback: (err: Error | null, result?: LoginRO) => void
   ) {
     this.authorizerClient
-      .send<LoginRO, RefreshTokenDto>(AUTHORIZER_EVENTS.REFRESH_TOKEN, dto)
+      .send<LoginRO, RefreshTokenPayload>(AUTHORIZER_EVENTS.REFRESH_TOKEN, {
+        ...dto,
+        id: user.id,
+      })
       .subscribe({
         next: (result) => callback(null, result),
         error: (err) => callback(err),

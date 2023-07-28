@@ -123,10 +123,13 @@ export class AppController {
   @ApiBearerAuth()
   @UseGuards(AtGuard)
   @Post('change-password')
-  changePassword(@Body() dto: ChangePasswordDto) {
+  changePassword(
+    @GetCurrentUser() user: IUser,
+    @Body() dto: ChangePasswordDto
+  ) {
     try {
       return new Promise<ChangePasswordRO>((resolve, reject) => {
-        this.appService.changePassword(dto, (err, result) => {
+        this.appService.changePassword(user, dto, (err, result) => {
           if (err) {
             reject({ message: err, status: 500 });
           }
@@ -153,7 +156,7 @@ export class AppController {
   refreshToken(@GetCurrentUser() user: IUser, @Body() dto: RefreshTokenDto) {
     try {
       return new Promise<LoginRO>((resolve, reject) => {
-        this.appService.refreshToken(user.id, dto, (err, result) => {
+        this.appService.refreshToken(user, dto, (err, result) => {
           if (err) {
             reject({ message: err, status: 500 });
           }
