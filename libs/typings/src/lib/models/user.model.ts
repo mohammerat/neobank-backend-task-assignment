@@ -5,7 +5,8 @@ export interface IUser {
   mobile: string;
   age: number;
   gender: string;
-  registeredAt?: Date | null;
+  registeredAt: Date;
+  verifiedAt?: Date | null;
   bannedAt?: Date | null;
   bannedUntil?: Date | null;
 }

@@ -48,7 +48,7 @@ export class AppController {
   @Post('sign-up')
   async signup(@Body() dto: SignUpDto) {
     try {
-      return new Promise<SignUpRO>((resolve, reject) => {
+      return await new Promise<SignUpRO>((resolve, reject) => {
         this.appService.signup(dto, (err, result) => {
           if (err) {
             reject({ message: err, status: 500 });
@@ -71,9 +71,9 @@ export class AppController {
     status: 500,
   })
   @Post('verify')
-  verify(@Body() dto: VerifyMobileDto) {
+  async verify(@Body() dto: VerifyMobileDto) {
     try {
-      return new Promise<VerifyMobileRO>((resolve, reject) => {
+      return await new Promise<VerifyMobileRO>((resolve, reject) => {
         this.appService.verify(dto, (err, result) => {
           if (err) {
             reject({ message: err, status: 500 });
@@ -96,9 +96,9 @@ export class AppController {
     status: 500,
   })
   @Post('login')
-  login(@Body() dto: LoginDto) {
+  async login(@Body() dto: LoginDto) {
     try {
-      return new Promise<LoginRO>((resolve, reject) => {
+      return await new Promise<LoginRO>((resolve, reject) => {
         this.appService.login(dto, (err, result) => {
           if (err) {
             reject({ message: err, status: 500 });
@@ -123,12 +123,12 @@ export class AppController {
   @ApiBearerAuth()
   @UseGuards(AtGuard)
   @Post('change-password')
-  changePassword(
+  async changePassword(
     @GetCurrentUser() user: IUser,
     @Body() dto: ChangePasswordDto
   ) {
     try {
-      return new Promise<ChangePasswordRO>((resolve, reject) => {
+      return await new Promise<ChangePasswordRO>((resolve, reject) => {
         this.appService.changePassword(user, dto, (err, result) => {
           if (err) {
             reject({ message: err, status: 500 });
@@ -153,9 +153,12 @@ export class AppController {
   @ApiBearerAuth()
   @UseGuards(RtGuard)
   @Post('refresh-token')
-  refreshToken(@GetCurrentUser() user: IUser, @Body() dto: RefreshTokenDto) {
+  async refreshToken(
+    @GetCurrentUser() user: IUser,
+    @Body() dto: RefreshTokenDto
+  ) {
     try {
-      return new Promise<LoginRO>((resolve, reject) => {
+      return await new Promise<LoginRO>((resolve, reject) => {
         this.appService.refreshToken(user, dto, (err, result) => {
           if (err) {
             reject({ message: err, status: 500 });

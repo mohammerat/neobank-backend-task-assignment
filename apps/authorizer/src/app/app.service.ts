@@ -92,6 +92,7 @@ export class AppService {
       },
       data: {
         verificationCode: null,
+        verifiedAt: new Date(),
       },
     });
 
@@ -112,6 +113,12 @@ export class AppService {
       throw new RpcException({
         message: 'User Not Found',
       });
+    }
+
+    if(!user.verifiedAt) {
+      throw new RpcException({
+        message: 'Access Denied'
+      })
     }
 
     if (!bcryptjs.compareSync(dto.password, user.password)) {

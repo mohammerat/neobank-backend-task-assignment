@@ -18,6 +18,7 @@ model User {
   hashedRefreshToken String?
   lastPasswordChanged String?
   verificationCode String?
+  verifiedAt DateTime?
   registeredAt  DateTime @default(now())
   updatedAt     DateTime @updatedAt
   deletedAt     DateTime?

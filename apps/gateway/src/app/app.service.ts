@@ -57,11 +57,11 @@ export class AppService implements OnModuleInit {
         )
         .subscribe({
           next: (result) => callback(null, result),
-          error: (err) => callback(err),
+          error: (err) => callback(err.message),
         });
     } catch (e) {
-      this.logger.error(e);
-      callback(e);
+      this.logger.error(e.message || e);
+      callback(e.message || e);
     }
   }
 
@@ -73,7 +73,7 @@ export class AppService implements OnModuleInit {
       .send<VerifyMobileRO, VerifyMobileDto>(AUTHORIZER_EVENTS.VERIFY_USER, dto)
       .subscribe({
         next: (result) => callback(null, result),
-        error: (err) => callback(err),
+        error: (err) => callback(err.message),
       });
   }
 
@@ -84,11 +84,8 @@ export class AppService implements OnModuleInit {
     this.authorizerClient
       .send<LoginRO, LoginDto>(AUTHORIZER_EVENTS.LOGIN, dto)
       .subscribe({
-        next: (result) => {
-          console.log(result);
-          callback(null, result);
-        },
-        error: (err) => callback(err),
+        next: (result) => callback(null, result),
+        error: (err) => callback(err.message),
       });
   }
 
@@ -104,7 +101,7 @@ export class AppService implements OnModuleInit {
       )
       .subscribe({
         next: (result) => callback(null, result),
-        error: (err) => callback(err),
+        error: (err) => callback(err.message),
       });
   }
 
@@ -120,7 +117,7 @@ export class AppService implements OnModuleInit {
       })
       .subscribe({
         next: (result) => callback(null, result),
-        error: (err) => callback(err),
+        error: (err) => callback(err.message),
       });
   }
 }
