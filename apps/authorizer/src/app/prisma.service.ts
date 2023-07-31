@@ -9,8 +9,8 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
   exclude(user: User) {
     const {
       password,
-      lastPasswordChanged,
       verificationCode,
+      hashedRefreshToken,
       updatedAt,
       deletedAt,
       bannedBy,

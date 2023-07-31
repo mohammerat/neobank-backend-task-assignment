@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { fakerFA as faker } from '@faker-js/faker';
 import minimist from 'minimist';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -11,23 +12,17 @@ export function createUser() {
   phoneNumber = phoneNumber.split('');
   phoneNumber[1] = String(faker.helpers.arrayElement([0, 1, 3, 9]));
   phoneNumber = phoneNumber.join('');
+  const password = bcrypt.hashSync(faker.internet.password(), 10);
   return {
     name: faker.person.firstName(gender.toLowerCase() as 'male' | 'female'),
     family: faker.person.lastName(),
     mobile: phoneNumber,
     age: faker.number.int({ min: 18, max: 70 }),
     gender: gender,
-    password: faker.internet.password(),
-    lastPasswordChanged:
-      Math.random() < 0.05 ? faker.internet.password() : null,
+    password,
     registeredAt: new Date(
       faker.date.past({
         years: 5,
-      })
-    ),
-    updatedAt: new Date(
-      faker.date.past({
-        years: 3,
       })
     ),
     deletedAt:
@@ -59,8 +54,16 @@ export function createUser() {
 async function main() {
   const args = minimist(process.argv.slice(2));
   for (let i = 0; i < args.n ?? 1; i++) {
+    const user = createUser();
     await prisma.user.create({
-      data: createUser(),
+      data: {
+        ...user,
+        passwordHistories: {
+          create: {
+            hashedPassword: user.password,
+          },
+        },
+      },
     });
   }
 }

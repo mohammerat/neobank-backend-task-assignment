@@ -16,7 +16,6 @@ model User {
   gender        String
   password      String
   hashedRefreshToken String?
-  lastPasswordChanged String?
   verificationCode String?
   verifiedAt DateTime?
   registeredAt  DateTime @default(now())
@@ -25,4 +24,15 @@ model User {
   bannedAt       DateTime?
   bannedBy       Int?
   bannedUntil    DateTime?
+  passwordHistories PasswordHistory[]
+}
+
+model PasswordHistory {
+  @@id([hashedPassword, userId])
+  hashedPassword String
+  createdAt DateTime @default(now())
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+
+  @@index([hashedPassword])
 }

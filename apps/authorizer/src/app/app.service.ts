@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
 import { JwtService } from '@nestjs/jwt';
 import bcryptjs from 'bcryptjs';
 
@@ -15,7 +16,6 @@ import {
 } from '@libs/typings';
 
 import { PrismaService } from './prisma.service';
-import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class AppService {
@@ -28,15 +28,27 @@ export class AppService {
   }
 
   async createUser(dto: SignUpDto) {
-    return this.prisma.exclude(
-      await this.prisma.user.create({
+    try {
+      const hashedPassword = bcryptjs.hashSync(dto.password, 10);
+      const user = await this.prisma.user.create({
         data: {
           ...dto,
-          password: bcryptjs.hashSync(dto.password, 10),
+          password: hashedPassword,
           registeredAt: new Date(),
+          passwordHistories: {
+            create: {
+              hashedPassword,
+            },
+          },
         },
-      })
-    );
+      });
+
+      return this.prisma.exclude(user);
+    } catch (error) {
+      throw new RpcException({
+        message: 'Internal Server error',
+      });
+    }
   }
 
   async sendVerificationCode(mobile: string) {
@@ -102,7 +114,7 @@ export class AppService {
     };
   }
 
-  async handleLogin(dto: LoginDto) {
+  async login(dto: LoginDto) {
     const user = await this.prisma.user.findUnique({
       where: {
         mobile: dto.mobile,
@@ -115,10 +127,10 @@ export class AppService {
       });
     }
 
-    if(!user.verifiedAt) {
+    if (!user.verifiedAt) {
       throw new RpcException({
-        message: 'Access Denied'
-      })
+        message: 'Access Denied',
+      });
     }
 
     if (!bcryptjs.compareSync(dto.password, user.password)) {
@@ -159,9 +171,26 @@ export class AppService {
       });
     }
 
+    const hashedPassword = bcryptjs.hashSync(payload.newPassword, 10);
+
     if (!bcryptjs.compareSync(payload.oldPassword, user.password)) {
       throw new RpcException({
         message: 'Current Password is incorrect',
+      });
+    }
+
+    const passwordHistory = await this.prisma.passwordHistory.findUnique({
+      where: {
+        hashedPassword_userId: {
+          hashedPassword,
+          userId: user.id,
+        },
+      },
+    });
+
+    if (passwordHistory) {
+      throw new RpcException({
+        message: `You set this password at: ${passwordHistory.createdAt}, please provide new password`,
       });
     }
 
@@ -170,8 +199,12 @@ export class AppService {
         id: user.id,
       },
       data: {
-        password: bcryptjs.hashSync(payload.newPassword, 10),
-        lastPasswordChanged: payload.oldPassword,
+        password: hashedPassword,
+        passwordHistories: {
+          create: {
+            hashedPassword,
+          },
+        },
       },
     });
 
@@ -188,7 +221,11 @@ export class AppService {
       },
     });
 
-    if (!user || !user.hashedRefreshToken)
+    if (
+      !user ||
+      !user.hashedRefreshToken ||
+      !bcryptjs.compare(payload.refresh_token, user.hashedRefreshToken)
+    )
       throw new RpcException({ message: 'Access Denied' });
 
     const tokens = await this.getTokens(this.prisma.exclude(user));
