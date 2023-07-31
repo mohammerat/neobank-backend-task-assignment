@@ -11,7 +11,8 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Hasin Neobank Sample Project')
-    .setVersion('1.0')
+    .setDescription('API Documentation using Swagger')
+    .setVersion('1.1')
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
