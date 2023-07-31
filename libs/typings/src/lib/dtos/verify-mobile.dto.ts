@@ -11,7 +11,7 @@ export class VerifyMobileDto {
   mobile: string;
 
   @ApiProperty({
-    description: 'Verification Code Sent',
+    description: "Verification code sent to user's mobile number",
     type: String,
   })
   @IsString()

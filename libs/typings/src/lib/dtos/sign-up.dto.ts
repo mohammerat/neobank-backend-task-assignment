@@ -1,17 +1,18 @@
 import { IsString, Matches, IsNumber, Min, Max, IsEnum } from 'class-validator';
-import { Gender } from '../enums';
 import { ApiProperty } from '@nestjs/swagger';
+
+import { Gender } from '../enums';
 
 export class SignUpDto {
   @ApiProperty({
-    description: 'First name of user',
+    description: "User's first name",
     type: String,
   })
   @IsString()
   name: string;
 
   @ApiProperty({
-    description: 'Last name of user',
+    description: "User's last name",
     type: String,
   })
   @IsString()
@@ -37,9 +38,9 @@ export class SignUpDto {
   age: number;
 
   @ApiProperty({
-    description: "User's gender",
     enum: Gender,
     enumName: 'Gender',
+    description: "User's gender",
   })
   @IsEnum(Gender)
   gender: Gender;
